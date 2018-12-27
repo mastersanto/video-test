@@ -1,0 +1,18 @@
+type Clip {
+  id: Int
+  name: String
+  start: Int
+  end: Int
+}
+
+type Video {
+  id: Int
+  videoUrl: String
+  clips: [Clip]
+}
+
+type Query {
+  clips: [Clip]
+  hello(subject: String): String
+  video(id: ID): Video
+}
