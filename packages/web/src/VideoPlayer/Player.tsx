@@ -1,10 +1,13 @@
-import { gql } from 'apollo-boost';
+// import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 import * as React from 'react';
+// import { Mutation, Query } from 'react-apollo';
 import { Query } from 'react-apollo';
 import styled from 'styled-components';
 
 import AddEditClip from './AddEditClip';
 import Clip from './Clip';
+import Video from './Video';
 
 const VideoComponent = styled.section`
   background-color: blue;
@@ -59,7 +62,7 @@ interface State {
 }
 
 // @ts-ignore
-class Video extends React.Component<Props, State, context> {
+class Player extends React.Component<Props, State, context> {
   // @ts-ignore
   // tslint:disable-next-line
   videoPlayer;
@@ -89,19 +92,10 @@ class Video extends React.Component<Props, State, context> {
   // tslint:disable-next-line
   shouldComponentUpdate(nextProps, nextState) {
     console.log('>>> shouldComponentUpdate!!!');
-    // console.log('nextProps > ', nextProps);
-    // console.log('nextState > ', nextState);
-    const { start: nextStart, end: nextEnd } = nextProps.params;
-    const { start } = this.props.params;
-
-    console.log('nextStart !== start > ', nextStart !== start);
-    if (nextStart !== start) {
-      const videoUrl = `${this.props.baseUrl}#t=${nextStart}${nextEnd}`;
-      console.log('NEW > videoUrl > ', videoUrl);
-      this.setState({
-        url: videoUrl
-      });
-
+    console.log('nextProps.videoUrl !== this.props.videoUrl > ', nextProps.videoUrl !== this.props.videoUrl);
+    // if (nextProps.videoUrl !== this.props.videoUrl || !!nextState.isEditingClip) {
+    if (nextProps.videoUrl !== this.props.videoUrl || nextState.isEditingClip !== this.state.isEditingClip) {
+      console.log('NEW > nextProps.videoUrl > ', nextProps.videoUrl);
       this.videoPlayer.load();
       return true;
     }
@@ -124,7 +118,7 @@ class Video extends React.Component<Props, State, context> {
 
   // @ts-ignore
   // tslint:disable-next-line
-  editClip = (clip) => {
+  editClip = clip => {
     console.log('>>> editClip > clip > ', clip);
     this.setState(
       {
@@ -136,6 +130,18 @@ class Video extends React.Component<Props, State, context> {
         });
       }
     );
+  };
+
+  // @ts-ignore
+  // tslint:disable-next-line
+  saveClip = (clip?: any) => {
+    console.log('>>> saveClip > clip > ', clip);
+  };
+
+  // @ts-ignore
+  // tslint:disable-next-line
+  deleteClip = (clip?: any) => {
+    console.log('>>> deleteClip > clip > ', clip);
   };
 
   // tslint:disable-next-line
@@ -161,21 +167,32 @@ class Video extends React.Component<Props, State, context> {
         <nav>
           <button onClick={this.handlePlay}>PLAY</button>
         </nav>
-        <video autoPlay={true} controls preload="metadata" ref={this.ref} onPlay={this.handleOnPlay}>
+        <Video getVideoEl={this.ref.bind(this)} handleOnPlay={() => this.handleOnPlay}>
           <source src={videoUrl} type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"' />
-        </video>
+        </Video>
         <Query query={GET_CLIPS}>
           {({ loading, data }) =>
             !loading && (
               <ClipsComponent>
-                {data.clips.map((clip: { id: number; name: string; start: number; end: number }) => (
-                  <Clip key={clip.id} clip={clip} editClip={this.editClip} />
+                <Clip />
+                {data.clips.map((clip: any) => (
+                  <Clip
+                    key={clip.id}
+                    // id={clip.id}
+                    name={clip.name}
+                    start={clip.start}
+                    end={clip.end}
+                    // deleteClip={id => this.deleteClip(id)}
+                    // tslint:disable-next-line
+                    editClip={clip => this.editClip(clip)}
+                  />
                 ))}
-                <button onClick={this.editClip}>(+) New Clip</button>
+                <button onClick={() => this.editClip}>(+) New Clip</button>
                 {isEditingClip ? (
                   <AddEditClip
                     clipToEdit={clipToEdit}
                     closeClipEdition={this.closeClipEdition}
+                    saveClip={clip => this.saveClip(clip)}
                     currentTime={currentTime}
                   />
                 ) : null}
@@ -188,4 +205,4 @@ class Video extends React.Component<Props, State, context> {
   }
 }
 
-export default Video;
+export default Player;

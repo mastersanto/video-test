@@ -2,20 +2,20 @@ import * as React from 'react';
 import { withRouter } from 'react-router-dom';
 // import { RouteComponentProps } from 'react-router-dom';
 
-import Video from './Video';
+import Player from './Player';
 
 // @ts-ignore
-const Player = props => {
+const VideoPlayer = props => {
   const getVideoUrl = () => {
     const { start, end } = props.match.params;
     const fragmentStart = start ? `#t=${start}` : '';
     const fragmentEnd = fragmentStart !== '' && end ? `,${end}` : '';
-    // TODO replace this.props => nextProps
+
     return `${props.baseUrl}${fragmentStart}${fragmentEnd}`;
   };
 
   return (
-    <Video
+    <Player
       baseUrl={props.baseUrl}
       videoUrl={getVideoUrl()}
       history={props.history}
@@ -26,4 +26,4 @@ const Player = props => {
 };
 
 // @ts-ignore
-export default withRouter(Player);
+export default withRouter(VideoPlayer);

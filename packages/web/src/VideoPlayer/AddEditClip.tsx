@@ -1,4 +1,6 @@
+import gql from 'graphql-tag';
 import * as React from 'react';
+import { Mutation } from 'react-apollo';
 import styled from 'styled-components';
 // import { ClipType } from '../../typings';
 // import 'webrtc';
@@ -38,6 +40,24 @@ const AddEditClipComponent = styled.div`
   }
 `;
 
+const CLIP_MOCKED = {
+  end: 9,
+  id: 2,
+  name: 'New Clip',
+  start: 8
+};
+
+const SAVE_CLIP = gql`
+  mutation saveClip($id: Int!, $name: String, $start: Int, $end: Int) {
+    saveClip(clipId: $id) {
+      id
+      name
+      start
+      end
+    }
+  }
+`;
+
 // tslint:disable-next-line
 interface State {
   name: string;
@@ -59,9 +79,11 @@ interface Props {
     name: string;
     start: number;
   };
+  // @ts-ignore
+  saveClip: (clip) => void;
 }
 
-class AddEditClip extends React.PureComponent<Props, State> {
+class AddEditClip extends React.Component<Props, State> {
   // tslint:disable-next-line
   props: Props;
   // tslint:disable-next-line
@@ -91,6 +113,24 @@ class AddEditClip extends React.PureComponent<Props, State> {
     });
   }
   */
+
+  // @ts-ignore
+  // tslint:disable-next-line
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('>>> AddEditClip > shouldComponentUpdate!!!');
+    console.log(
+      'nextProps.clipToEdit.id !== this.props.clipToEdit.id > ',
+      nextProps.clipToEdit.id !== this.props.clipToEdit.id
+    );
+    /*
+    if (nextProps.clipToEdit.id !== this.props.clipToEdit.id) {
+      console.log('NEW > nextProps.videoUrl > ', nextProps.videoUrl);
+      this.videoPlayer.load();
+      return true;
+    }
+    */
+    return false;
+  }
 
   // tslint:disable-next-line
   setClipStart = (currentTime: number) => {
@@ -145,7 +185,7 @@ class AddEditClip extends React.PureComponent<Props, State> {
   // tslint:disable-next-line
   render() {
     // const { saveClip, closeClipDialog, currentTime } = this.props;
-    const { currentTime, closeClipEdition } = this.props;
+    const { currentTime, closeClipEdition, saveClip } = this.props;
     console.log('>>>>>> AddClipDialog > RENDER >>>>>>');
     console.log('this.props > ', this.props);
     console.log('this.state > ', this.state);
@@ -196,6 +236,20 @@ class AddEditClip extends React.PureComponent<Props, State> {
             ) : null}
           </li>
         </ul>
+        {saveClip != null ? (
+          // @ts-ignore
+          <Mutation mutation={SAVE_CLIP}>
+            {SAVE_CLIP => ( // tslint:disable-line
+              <button
+                className="delete"
+                // @ts-ignore
+                onClick={() => SAVE_CLIP(CLIP_MOCKED)}
+              >
+                Delete
+              </button>
+            )}
+          </Mutation>
+        ) : null}
         <button className="save" onClick={this.saveClip}>
           Save
         </button>

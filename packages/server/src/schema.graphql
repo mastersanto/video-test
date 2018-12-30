@@ -1,18 +1,24 @@
 type Clip {
-  id: Int
+  id: Int!
   name: String
   start: Int
   end: Int
 }
 
 type Video {
-  id: Int
+  id: Int!
   videoUrl: String
   clips: [Clip]
 }
 
 type Query {
-  clips: [Clip]
   hello(subject: String): String
+  clip(clipId: Int!): Clip
+  clips: [Clip]
   video(id: ID): Video
+}
+
+type Mutation {
+  deleteClip (clipId: Int!): Boolean
+  saveClip (clipId: Int!, name: String, start: Int, end: Int): Clip
 }

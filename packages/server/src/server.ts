@@ -47,12 +47,12 @@ export default async (port: number): Promise<Server> => {
       new SubscriptionServer(
         {
           execute,
-          subscribe,
-          schema
+          schema,
+          subscribe
         },
         {
-          server,
-          path: '/subscriptions'
+          path: '/subscriptions',
+          server
         }
       );
       resolve(server);
