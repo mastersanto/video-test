@@ -1,55 +1,19 @@
 import gql from 'graphql-tag';
+// import { gql } from 'apollo-boost';
 import * as React from 'react';
 import { Mutation } from 'react-apollo';
-import styled from 'styled-components';
-// import { ClipType } from '../../typings';
-// import 'webrtc';
 
-const AddEditClipComponent = styled.div`
-  background-color: cyan;
-  padding: 8px;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  font-size: 10px;
-  height: 124px;
-
-  ul {
-    list-style: none;
-    margin: 0 0 5px;
-    padding: 0;
-  }
-
-  button {
-    cursor: pointer;
-
-    &.set {
-      display: inline;
-    }
-
-    &.save {
-      background-color: green;
-      color: white;
-    }
-
-    &.cancel {
-      background-color: grey;
-      color: white;
-    }
-  }
-`;
+import { AddEditClipComponent } from './styles';
 
 const CLIP_MOCKED = {
-  end: 9,
-  id: 2,
+  end: 20,
   name: 'New Clip',
-  start: 8
+  start: 15
 };
 
 const SAVE_CLIP = gql`
-  mutation saveClip($id: Int!, $name: String, $start: Int, $end: Int) {
-    saveClip(clipId: $id) {
+  mutation saveClip($id: Int, $name: String, $start: Int, $end: Int) {
+    saveClip(id: $id, name: $name, start: $start, end: $end) {
       id
       name
       start
@@ -69,13 +33,11 @@ interface State {
 
 // tslint:disable-next-line
 interface Props {
-  // saveClip: (p: { name: string; start: number; end: number }) => void;
-  // closeClipDialog: () => void;
   closeClipEdition: () => void;
   currentTime: number;
   clipToEdit: {
     end: number;
-    id: number;
+    id?: number;
     name: string;
     start: number;
   };
@@ -94,43 +56,10 @@ class AddEditClip extends React.Component<Props, State> {
     start: this.props.clipToEdit && this.props.clipToEdit.start ? this.props.clipToEdit.start : this.props.currentTime,
     startSet: (this.props.clipToEdit && this.props.clipToEdit.start != null) || false
   };
-  /*
-  // @ts-ignore-start
-  // tslint:disable-next-line
-  componentWillReceiveProps(nextProps) {
-    // @ts-ignore-end
-    console.log('>>>>>> componentWillReceiveProps >>>>>>');
-    console.log('> nextProps > ', nextProps);
-    // this.setState({
-    this.setState({
-      end: nextProps.clipToEdit && nextProps.clipToEdit.end ? nextProps.clipToEdit.end : null,
-      endSet: nextProps.clipToEdit && nextProps.clipToEdit.end,
-      name: nextProps.clipToEdit && nextProps.clipToEdit.name ? nextProps.clipToEdit.name : '',
-      start: nextProps.clipToEdit && nextProps.clipToEdit.start ? nextProps.clipToEdit.start : nextProps.currentTime,
-      // start: nextProps.clipToEdit && nextProps.clipToEdit.start ? nextProps.clipToEdit.start : null,
-      // startSet: false,
-      startSet: nextProps.clipToEdit && nextProps.clipToEdit.start
-    });
-  }
-  */
 
   // @ts-ignore
   // tslint:disable-next-line
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('>>> AddEditClip > shouldComponentUpdate!!!');
-    console.log(
-      'nextProps.clipToEdit.id !== this.props.clipToEdit.id > ',
-      nextProps.clipToEdit.id !== this.props.clipToEdit.id
-    );
-    /*
-    if (nextProps.clipToEdit.id !== this.props.clipToEdit.id) {
-      console.log('NEW > nextProps.videoUrl > ', nextProps.videoUrl);
-      this.videoPlayer.load();
-      return true;
-    }
-    */
-    return false;
-  }
+  handleOnChangeName = e => this.setState({ name: e.target.value });
 
   // tslint:disable-next-line
   setClipStart = (currentTime: number) => {
@@ -155,9 +84,6 @@ class AddEditClip extends React.Component<Props, State> {
 
   // tslint:disable-next-line
   setClipEnd = (currentTime: number) => {
-    console.log('>>>>>> SET >>>>>>');
-    console.log('>>>>>> SET >>>>>>');
-    console.log('>>>>>> SET >>>>>>');
     console.log('>>>>>> setClipEnd >>>>>>');
     console.log('currentTime > ', currentTime);
     if (this.state.start < currentTime) {
@@ -184,18 +110,18 @@ class AddEditClip extends React.Component<Props, State> {
 
   // tslint:disable-next-line
   render() {
-    // const { saveClip, closeClipDialog, currentTime } = this.props;
-    const { currentTime, closeClipEdition, saveClip } = this.props;
+    const { clipToEdit, closeClipEdition, currentTime, saveClip } = this.props;
+    const { name, start, startSet, end, endSet } = this.state;
     console.log('>>>>>> AddClipDialog > RENDER >>>>>>');
     console.log('this.props > ', this.props);
     console.log('this.state > ', this.state);
-    const { name, start, startSet, end, endSet } = this.state;
+
     return (
       <AddEditClipComponent>
         <ul>
           <li>
             <div>Name</div>
-            <input type="text" value={name} onChange={() => console.log('Name Change!')} />
+            <input type="text" value={name} onChange={this.handleOnChangeName} />
           </li>
           <li>
             <div>
@@ -238,21 +164,29 @@ class AddEditClip extends React.Component<Props, State> {
         </ul>
         {saveClip != null ? (
           // @ts-ignore
-          <Mutation mutation={SAVE_CLIP}>
+          <Mutation
+            mutation={SAVE_CLIP}
+            variables={{
+              end: CLIP_MOCKED.end,
+              id: clipToEdit.id,
+              name,
+              start: CLIP_MOCKED.start
+            }}
+          >
             {SAVE_CLIP => ( // tslint:disable-line
               <button
                 className="delete"
                 // @ts-ignore
-                onClick={() => SAVE_CLIP(CLIP_MOCKED)}
+                onClick={() => {
+                  SAVE_CLIP();
+                  closeClipEdition();
+                }}
               >
-                Delete
+                Save YES
               </button>
             )}
           </Mutation>
         ) : null}
-        <button className="save" onClick={this.saveClip}>
-          Save
-        </button>
         <button className="cancel" onClick={closeClipEdition}>
           Cancel
         </button>

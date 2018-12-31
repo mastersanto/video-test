@@ -1,20 +1,20 @@
 // TODO: add Subscriptions
-// import { PubSub } from 'apollo-server';
+import { PubSub } from 'apollo-server';
 import defaults from './defaults';
 
 const { clips, videos } = defaults;
 
-// const SAVE_CLIP = 'SAVE_CLIP';
+const SAVE_CLIP = 'SAVE_CLIP';
 // const DELETE_CLIP = 'DELETE_CLIP';
 
-// const pubsub = new PubSub();
+const pubsub = new PubSub();
 
 export default {
   Query: {
     // @ts-ignore
-    clip: (_, { clipId }) => {
-      console.log('Query clip >>> ', clipId);
-      return clips.find(clip => clip.id === clipId);
+    clip: (_, { id }) => {
+      console.log('Query clip >>> ', id);
+      return clips.find(clip => clip.id === id);
     },
     clips: () => clips,
     hello(obj: any, { subject }: { subject: string }) {
@@ -29,46 +29,79 @@ export default {
   Mutation: {
     // @ts-ignore
     // tslint:disable-next-line
-    async saveClip(_, { clipId, name, start, end }) {
+    async saveClip(_, { id, name, start, end }) {
+      // async saveClip(_, { clip }) {
       let clipToSave;
-      console.log('>>> saveClip > ', clipId);
+      // const { id, name, start, end } = clip;
+      // console.log('>>> saveClip > ', id);
+      /*
+      clipToSave = {
+        end,
+        id: clips.length + 1,
+        name,
+        start
+      };
+      */
+      // clips.push(clipToSave);
 
-      if (clipId) {
-        clipToSave = await clips.find(clip => clip.id === clipId);
-
+      if (id != null) {
+        clipToSave = await clips.find(clipItem => clipItem.id === id);
         if (clipToSave) {
+          console.log('>>> save With id > clipToSave > ', id);
+          console.log('>>> save With > ', clipToSave);
           clipToSave.name = name;
           clipToSave.start = start;
           clipToSave.end = end;
+          // clips.push(clipToSave);
         }
       } else {
+        console.log('>>> clipToSave NO id > clips.length > ', clips.length);
         clipToSave = {
           end,
-          id: clips.length + 1,
+          // TODO: implement uuid and ID instead of Int
+          id: clips.length,
           name,
           start
         };
+        console.log('>>> clipToSave NO id > > ', clipToSave);
+        clips.push(clipToSave);
       }
+      pubsub.publish(SAVE_CLIP, { clip: clipToSave });
 
-      console.log('>>> clipToSave > ', clipToSave);
       return clipToSave;
     },
+    // async deleteClip(_, { id }, { cache }) {
     // @ts-ignore
     // tslint:disable-next-line
-    async deleteClip(_, { clipId }) {
-      const clipToDelete = await clips.find(clip => clip.id === clipId);
+    async deleteClip(_, { id }) {
+      // const clipToDelete = await clips.find(clip => clip.id === id);
+      const clipToDelete = await clips.find(clip => clip.id === id);
+      // @ts-ignore
+      const index = clips.indexOf(clipToDelete);
+      // const index = await clips.indexOf({ id: id });
+      console.log('>>> deleteClip > index >', index);
+      // console.log('>>> deleteClip > id >', id);
+      // console.log('>>> deleteClip > cache >', cache.readQuery({ id: id }));
+      // const clipToDelete = await clips.find(clip => clip.id === id);
+      console.log('>>> clipToDelete ', clipToDelete);
+      // console.log('>>> clipToDelete > INDEX ', clips.findIndex(clip => clip.id === id));
+      // console.log('>>> clipToDelete > Index ', clipToDelete.index);
       // @ts-ignore
       // return clipToDelete.destroy();
-      return _.destroy(clips, clipToDelete);
+      clips.splice(index, 1);
+      // return true;
+      // return clipToDelete;
+      // return _.destroy(clips, clipToDelete);
+      return true;
     }
     /*
-    deleteClip: (_, { clipId }) => {
-      console.log('>>> deleteClip > ', clipId);
-      const clipToDelete = clips.find(clip => clip.id === clipId);
+    deleteClip: (_, { id }) => {
+      console.log('>>> deleteClip > ', id);
+      const clipToDelete = clips.find(clip => clip.id === id);
       _.remove(clips, clipToDelete);
       // const { [id]: clip, ...otherClips } = clips;
-      console.log('>>> deleteClip 2 > ', clipId);
-      pubsub.publish(DELETE_CLIP, { id: clipId });
+      console.log('>>> deleteClip 2 > ', id);
+      pubsub.publish(DELETE_CLIP, { id: id });
       return clipToDelete;
     }
     */
@@ -106,7 +139,7 @@ query Clips {
 }
 
 query Clip ($id:Int!) {
-  clip(clipId: $id) {
+  clip(id: $id) {
     id
     name
     start
@@ -115,11 +148,11 @@ query Clip ($id:Int!) {
 }
 
 mutation DeleteClip($id:Int!) {
-  deleteClip(clipId:$id)
+  deleteClip(id:$id)
 }
 
 mutation SaveClip($id:Int!, $name: String, $start: Int, $end: Int) {
-  saveClip(clipId:$id, name:$name, start:$start, end:$end) {
+  saveClip(id:$id, name:$name, start:$start, end:$end) {
     id, name, start, end
   }
 }
@@ -138,7 +171,7 @@ mutation SaveClip($id:Int!, $name: String, $start: Int, $end: Int) {
 }
 
 {
-  "clipId": 1
+  "id": 1
 }
 
  */

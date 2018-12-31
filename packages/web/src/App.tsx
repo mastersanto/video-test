@@ -1,4 +1,5 @@
-import { gql } from 'apollo-boost';
+// import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 import * as React from 'react';
 import { Query } from 'react-apollo';
 

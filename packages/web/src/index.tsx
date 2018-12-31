@@ -1,4 +1,10 @@
-import ApolloClient from 'apollo-boost';
+// import { withClientState } from 'apollo-link-state';
+// import ApolloClient from 'apollo-boost';
+// import { ApolloLink } from 'apollo-link';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+
 import * as React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import * as ReactDOM from 'react-dom';
@@ -10,6 +16,34 @@ import Routes from './Routes';
 
 const GRAPHQL_API_URL = 'http://localhost:8080/graphql';
 
+const cache = new InMemoryCache();
+/*
+const stateLink = withClientState({
+  cache,
+  resolvers: {
+    Mutation: {
+      updateNetworkStatus: (_, { isConnected }, { cache }) => {
+        const data = {
+          networkStatus: {
+            __typename: 'NetworkStatus',
+            isConnected
+          },
+        };
+        cache.writeData({ data });
+        return null
+      },
+    },
+  }
+});
+*/
+
+const client = new ApolloClient({
+  cache,
+  link: new HttpLink({
+    uri: GRAPHQL_API_URL
+  })
+});
+/*
 const client = new ApolloClient({
   clientState: {
     resolvers: {
@@ -22,6 +56,7 @@ const client = new ApolloClient({
   },
   uri: GRAPHQL_API_URL
 });
+*/
 /*
 render(
   <ApolloProvider client={client}>

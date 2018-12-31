@@ -35,8 +35,15 @@ export default async (port: number): Promise<Server> => {
           '# Welcome to your own GraphQL server!\n#\n' +
           '# Press Play button above to execute GraphQL query\n#\n' +
           '# You can start editing source code and see results immediately\n\n' +
-          'query hello($subject:String) {\n  hello(subject: $subject)\n}',
-        variables: { subject: 'World' }
+          'query hello($subject:String) {\n  hello(subject: $subject)\n}\n\n' +
+          'query Clips {\n  clips{id, name, start, end} \n}\n\n' +
+          'mutation SaveClip($id:Int, $name: String, $start: Int, $end: Int) {\n' +
+          '  saveClip(id:$id, name:$name, start:$start, end:$end) {\n' +
+          '    id, name, start, end\n' +
+          '  }\n' +
+          '}\n',
+        // variables: { subject: 'World' }
+        variables: { id: 1, name: 'Test Save', start: 15, end: 20 }
       })
     );
   }

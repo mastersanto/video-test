@@ -8,84 +8,21 @@ import { Mutation } from 'react-apollo';
 import { Link } from 'react-router-dom';
 // import { withRouter } from 'react-router-dom';
 
-import styled from 'styled-components';
+// import styled from 'styled-components';
 
 // import { Link } from 'react-router-dom';
-
-const ClipComponent = styled.div`
-  position: relative;
-
-  &:hover > .data {
-    opacity: 1;
-  }
-
-  .data {
-    background-color: rgba(255, 255, 255, 0.7);
-    position: absolute;
-    bottom: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    opacity: 0;
-    transition: transform opacity 0.3s easy-out;
-    list-style: none;
-    margin: 0;
-    padding: 16px;
-    text-align: left;
-    font-size: 12px;
-
-    > li {
-      > span {
-        font-weight: bold;
-      }
-    }
-  }
-
-  .actions {
-    position: absolute;
-    bottom: 16px;
-    left: 16px;
-
-    > a,
-    > button {
-      border: 1px solid white;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      height: 30px;
-      line-height: 30px;
-      display: inline-block;
-      z-index: 1;
-      border-radius: 15px;
-      text-align: center;
-    }
-  }
-
-  .play {
-    background-color: red;
-    width: 30px;
-  }
-
-  .edit {
-    background-color: green;
-    width: auto;
-  }
-
-  .delete {
-    background-color: black;
-    width: auto;
-  }
-`;
+import ClipData from './ClipData';
+import { ClipComponent } from './styles';
 
 const DELETE_CLIP = gql`
   mutation deleteClip($id: Int!) {
-    deleteClip(clipId: $id)
+    deleteClip(id: $id)
   }
 `;
 
 // tslint:disable-next-line
 interface Props {
-  id?: any;
+  id?: number;
   // id?: number;
   name?: string;
   start?: number;
@@ -93,11 +30,12 @@ interface Props {
   // @ts-ignore
   editClip?: (clip) => void;
   // @ts-ignore
-  // deleteClip?: (id) => void;
+  deleteClip?: (id) => void;
 }
 
 // @ts-ignore
 const Clip = (props: Props) => {
+  console.log('CLP!!!! >> ', props);
   const getVideoFragment = () => {
     // const { id, start, end } = props;
     const { start, end } = props;
@@ -111,35 +49,27 @@ const Clip = (props: Props) => {
     // const Clip = (props: { history: any; clip: any; saveClip: (clip) => void; goToClip: (fragment) => void }) => (
     <ClipComponent>
       <img alt={props.name} src={'https://placekitten.com/200/120'} />
-      <ul className="data">
-        <li>
-          <span>Title:</span> {props.name}
-        </li>
-        <li>
-          <span>Start:</span> {props.start}
-        </li>
-        <li>
-          <span>End:</span> {props.end}
-        </li>
-      </ul>
+      <ClipData name={props.name || 'Full Video Length'} start={props.start || 0} end={props.end} />
       <div className="actions">
         <Link className="play" to={getVideoFragment()}>
           >
         </Link>
-        <button className="edit" onClick={props.editClip}>
-          edit
-        </button>
-        <Mutation mutation={DELETE_CLIP} key={props.id}>
-          {DELETE_CLIP => ( // tslint:disable-line
-            <button
-              className="delete"
-              // @ts-ignore
-              onClick={() => DELETE_CLIP({ clipId: props.id })}
-            >
-              Delete
-            </button>
-          )}
-        </Mutation>
+        {props.start ? (
+          <section>
+            <Mutation mutation={DELETE_CLIP} variables={{ id: props.id }}>
+              {DELETE_CLIP => ( // tslint:disable-line
+                <button
+                  className="delete"
+                  // @ts-ignore
+                  onClick={DELETE_CLIP}
+                  // onClick={() => DELETE_CLIP({ id: props.id })}
+                >
+                  Delete: {props.id}
+                </button>
+              )}
+            </Mutation>
+          </section>
+        ) : null}
       </div>
     </ClipComponent>
   );
