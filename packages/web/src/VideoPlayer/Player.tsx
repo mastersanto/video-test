@@ -21,7 +21,7 @@ interface Props {
 
 // tslint:disable-next-line
 interface State {
-  isEditingClip: boolean;
+  // isEditingClip: boolean;
   url: string;
   videoFragment: string;
   clipToEdit: any;
@@ -29,7 +29,7 @@ interface State {
 }
 
 // @ts-ignore
-class Player extends React.Component<Props, State, context> {
+class Player extends React.PureComponent<Props, State> {
   // @ts-ignore
   // tslint:disable-next-line
   videoPlayer;
@@ -37,18 +37,19 @@ class Player extends React.Component<Props, State, context> {
   state: State = {
     clipToEdit: null,
     currentTime: 0,
-    isEditingClip: false,
-    url: this.props.baseUrl,
+    // isEditingClip: false,
+    url: this.props.videoUrl,
+    // url: this.props.baseUrl,
     // url: this.props.videoUrl,
     videoFragment: ''
   };
+  /*
   // componentWillMount() {
   // @ts-ignore
   // tslint:disable-next-line
   componentDidMount() {
-    console.log('>>> componentDidMount!!!');
-    console.log('>>> this.props >', this.props);
-
+    // console.log('>>> componentDidMount!!!');
+    // console.log('>>> this.props >', this.props);
     this.setState({ url: this.props.videoUrl }, () => {
       this.videoPlayer.load();
       return true;
@@ -58,10 +59,8 @@ class Player extends React.Component<Props, State, context> {
   // @ts-ignore
   // tslint:disable-next-line
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('>>> shouldComponentUpdate!!!');
-    console.log('nextProps.videoUrl !== this.props.videoUrl > ', nextProps.videoUrl !== this.props.videoUrl);
-    // if (nextProps.videoUrl !== this.props.videoUrl || !!nextState.isEditingClip) {
-    // if (nextProps.videoUrl !== this.props.videoUrl || nextState.isEditingClip !== this.state.isEditingClip) {
+    // console.log('>>> shouldComponentUpdate!!!');
+    // console.log('nextProps.videoUrl !== this.props.videoUrl > ', nextProps.videoUrl !== this.props.videoUrl);
     if (nextProps.videoUrl !== this.props.videoUrl) {
       console.log('NEW > nextProps.videoUrl > ', nextProps.videoUrl);
       this.videoPlayer.load();
@@ -69,19 +68,49 @@ class Player extends React.Component<Props, State, context> {
     }
     return false;
   }
+  */
 
   // tslint:disable-next-line
   handlePlay = () => {
     console.log('handleClick >> ');
     this.videoPlayer.play();
   };
-
+  /*
+  // @ts-ignore
   // tslint:disable-next-line
-  handleOnPlay = () => {
+  handleOnPlay = (el) => {
     console.log('handleOnPlay >> ');
+    console.log('handleOnPlay >> el >> ', el);
+    console.log('handleOnPlay >> currentTime  >> ', this.videoPlayer.currentTime);
+    console.log('handleOnPlay >> currentTime Floor  >> ', Math.floor(this.videoPlayer.currentTime));
+    console.log('handleOnPlay >> buffered  >> ', this.videoPlayer.buffered);
+    // console.log('currentTime  >> floor', Math.floor(this.videoPlayer.currentTime));
+    this.setState({
+      currentTime: Math.floor(this.videoPlayer.currentTime)
+    });
+
+    // TODO: this would be useful to listen video currentTime or unListen it
+    // this.setState({
+    //   isEditingClip: false
+    // });
+  };
+  */
+
+  // @ts-ignore
+  // tslint:disable-next-line
+  handleTimeUpdate = () => {
+    // console.log('handleTimeUpdate >> ');
+    // console.log('handleTimeUpdate >> currentTime  >> ', this.videoPlayer.currentTime);
+    // console.log('currentTime  >> floor', Math.floor(this.videoPlayer.currentTime));
+    this.setState({
+      currentTime: Math.floor(this.videoPlayer.currentTime)
+    });
+    /*
+    TODO: this would be useful to listen video currentTime or unListen it
     this.setState({
       isEditingClip: false
     });
+    */
   };
 
   // tslint:disable-next-line
@@ -100,7 +129,11 @@ class Player extends React.Component<Props, State, context> {
         <nav>
           <button onClick={this.handlePlay}>PLAY</button>
         </nav>
-        <Video getVideoEl={this.ref.bind(this)} handleOnPlay={() => this.handleOnPlay}>
+        <Video
+          getVideoEl={this.ref.bind(this)}
+          // handleOnPlay={this.handleOnPlay}
+          handleTimeUpdate={this.handleTimeUpdate}
+        >
           <source src={videoUrl} type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"' />
         </Video>
         <Clips currentTime={currentTime} />

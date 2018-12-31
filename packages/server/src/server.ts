@@ -37,13 +37,19 @@ export default async (port: number): Promise<Server> => {
           '# You can start editing source code and see results immediately\n\n' +
           'query hello($subject:String) {\n  hello(subject: $subject)\n}\n\n' +
           'query Clips {\n  clips{id, name, start, end} \n}\n\n' +
-          'mutation SaveClip($id:Int, $name: String, $start: Int, $end: Int) {\n' +
+          'mutation DeleteClip($id:ID!) {\n  deleteClip(id:$id) \n}\n\n' +
+          'mutation SaveClip($id:ID, $name: String, $start: Int, $end: Int) {\n' +
           '  saveClip(id:$id, name:$name, start:$start, end:$end) {\n' +
           '    id, name, start, end\n' +
           '  }\n' +
           '}\n',
         // variables: { subject: 'World' }
         variables: { id: 1, name: 'Test Save', start: 15, end: 20 }
+        /*
+        mutation DeleteClip($id:Int!) {
+          deleteClip(id:$id)
+        }
+        */
       })
     );
   }

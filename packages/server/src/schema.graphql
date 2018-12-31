@@ -1,5 +1,5 @@
 type Clip {
-  id: Int!
+  id: ID!
   name: String
   start: Int
   end: Int
@@ -13,12 +13,12 @@ type Video {
 
 type Query {
   hello(subject: String): String
-  clip(id: Int!): Clip
+  clip(id: ID!): Clip
   clips: [Clip]
   video(id: ID): Video
 }
 
 type Mutation {
-  deleteClip (id: Int!): Boolean
-  saveClip (id: Int, name: String, start: Int, end: Int): Clip
+  deleteClip (id: ID!): Boolean
+  saveClip (id: ID, name: String, start: Int, end: Int): Clip
 }

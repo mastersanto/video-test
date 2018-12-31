@@ -16,7 +16,12 @@ export const VideoComponent = styled.section`
 `;
 
 export const ClipsComponent = styled.nav`
+  position: relative;
   display: flex;
+
+  .ClipsList {
+    display: flex;
+  }
 
   > button {
     cursor: pointer;
@@ -168,9 +173,9 @@ export const AddEditClipComponent = styled.div`
   position: absolute;
   right: 0;
   bottom: 0;
+  top: 0;
   left: 0;
   font-size: 10px;
-  height: 124px;
 
   ul {
     list-style: none;
@@ -185,6 +190,12 @@ export const AddEditClipComponent = styled.div`
       display: inline;
     }
 
+    &.edit {
+      background-color: blue;
+      color: white;
+    }
+
+    &.set,
     &.save {
       background-color: green;
       color: white;

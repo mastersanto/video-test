@@ -9,6 +9,25 @@ const SAVE_CLIP = 'SAVE_CLIP';
 
 const pubsub = new PubSub();
 
+// TODO: move to utils
+const getId = (): string => {
+  /*jshint bitwise:false */
+  let i;
+  let random;
+  let uuid = '';
+
+  for (i = 0; i < 32; i++) {
+    random = Math.random() * 16 | 0;
+    if (i === 8 || i === 12 || i === 16 || i === 20) {
+      uuid += '-';
+    }
+    uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+      .toString(16);
+  }
+
+  return uuid;
+};
+
 export default {
   Query: {
     // @ts-ignore
@@ -29,20 +48,9 @@ export default {
   Mutation: {
     // @ts-ignore
     // tslint:disable-next-line
-    async saveClip(_, { id, name, start, end }) {
-      // async saveClip(_, { clip }) {
+    async saveClip(_, { id, name, start, end }, { cache }) {
+      console.log('>>> deleteClip > cache > ', cache);
       let clipToSave;
-      // const { id, name, start, end } = clip;
-      // console.log('>>> saveClip > ', id);
-      /*
-      clipToSave = {
-        end,
-        id: clips.length + 1,
-        name,
-        start
-      };
-      */
-      // clips.push(clipToSave);
 
       if (id != null) {
         clipToSave = await clips.find(clipItem => clipItem.id === id);
@@ -52,14 +60,12 @@ export default {
           clipToSave.name = name;
           clipToSave.start = start;
           clipToSave.end = end;
-          // clips.push(clipToSave);
         }
       } else {
         console.log('>>> clipToSave NO id > clips.length > ', clips.length);
         clipToSave = {
           end,
-          // TODO: implement uuid and ID instead of Int
-          id: clips.length,
+          id: getId(),
           name,
           start
         };
@@ -73,25 +79,15 @@ export default {
     // async deleteClip(_, { id }, { cache }) {
     // @ts-ignore
     // tslint:disable-next-line
-    async deleteClip(_, { id }) {
-      // const clipToDelete = await clips.find(clip => clip.id === id);
+    async deleteClip(_, { id }, { cache }) {
+      // console.log('>>> deleteClip > cache > ', cache);
+      // console.log('>>> deleteClip > cache writeData!', cache.writeData());
       const clipToDelete = await clips.find(clip => clip.id === id);
       // @ts-ignore
       const index = clips.indexOf(clipToDelete);
-      // const index = await clips.indexOf({ id: id });
       console.log('>>> deleteClip > index >', index);
-      // console.log('>>> deleteClip > id >', id);
-      // console.log('>>> deleteClip > cache >', cache.readQuery({ id: id }));
-      // const clipToDelete = await clips.find(clip => clip.id === id);
-      console.log('>>> clipToDelete ', clipToDelete);
-      // console.log('>>> clipToDelete > INDEX ', clips.findIndex(clip => clip.id === id));
-      // console.log('>>> clipToDelete > Index ', clipToDelete.index);
-      // @ts-ignore
-      // return clipToDelete.destroy();
+      // console.log('>>> clipToDelete ', clipToDelete);
       clips.splice(index, 1);
-      // return true;
-      // return clipToDelete;
-      // return _.destroy(clips, clipToDelete);
       return true;
     }
     /*

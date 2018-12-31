@@ -19,26 +19,31 @@ const GET_CLIPS = gql`
 `;
 
 // tslint:disable-next-line
+interface ClipType {
+  end: number;
+  id?: any;
+  name: string;
+  start: number;
+}
+
+// tslint:disable-next-line
 interface Props {
-  // closeClipEdition: () => void;
-  // editClip: () => void;
-  // saveClip: () => void;
   currentTime: number;
 }
 
 // tslint:disable-next-line
 interface State {
   isEditingClip: boolean;
-  clipToEdit: any;
+  clipToEdit?: ClipType;
 }
 
 class Clips extends React.PureComponent<Props, State> {
   // tslint:disable-next-line
   props: Props;
-
   // tslint:disable-next-line
   state: State = {
-    clipToEdit: null,
+    // TODO clipToEdit
+    // clipToEdit: null,
     isEditingClip: false
   };
 
@@ -81,7 +86,9 @@ class Clips extends React.PureComponent<Props, State> {
   // tslint:disable-next-line
   render() {
     const { clipToEdit, isEditingClip } = this.state;
+    // const { isEditingClip } = this.state;
     const { currentTime } = this.props;
+    // console.log('>>> CLIPS > render > currentTime > ', currentTime);
 
     return (
       <Query query={GET_CLIPS}>
@@ -94,29 +101,30 @@ class Clips extends React.PureComponent<Props, State> {
           }
           return (
             <ClipsComponent>
-              <Clip />
-              <section>
+              <Clip
+                clip={{
+                  name: 'Full Video'
+                }}
+                editClip={this.editClip}
+              />
+              <section className="ClipsList">
                 {data.clips.map((clip: any) => (
                   <Clip
                     key={clip.id}
-                    id={clip.id}
-                    name={clip.name}
-                    start={clip.start}
-                    end={clip.end}
-                    // deleteClip={id => this.deleteClip(id)}
+                    clip={clip}
                     // tslint:disable-next-line
-                    editClip={this.editClip}
+                    editClip={clip => this.editClip(clip)}
                   />
                 ))}
               </section>
               <button onClick={this.editClip}>(+) New Clip</button>
               {isEditingClip ? (
                 <AddEditClip
-                  clipToEdit={clipToEdit}
+                  // @ts-ignore
+                  clip={clipToEdit}
                   closeClipEdition={this.closeClipEdition}
                   // tslint:disable-next-line
                   saveClip={this.saveClip}
-                  // saveClip={clipToEdit => this.saveClip(clipToEdit)}
                   currentTime={currentTime}
                 />
               ) : null}

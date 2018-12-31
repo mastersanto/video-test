@@ -5,14 +5,8 @@ import { Mutation } from 'react-apollo';
 
 import { AddEditClipComponent } from './styles';
 
-const CLIP_MOCKED = {
-  end: 20,
-  name: 'New Clip',
-  start: 15
-};
-
 const SAVE_CLIP = gql`
-  mutation saveClip($id: Int, $name: String, $start: Int, $end: Int) {
+  mutation saveClip($id: ID, $name: String, $start: Int, $end: Int) {
     saveClip(id: $id, name: $name, start: $start, end: $end) {
       id
       name
@@ -21,6 +15,14 @@ const SAVE_CLIP = gql`
     }
   }
 `;
+
+// tslint:disable-next-line
+interface Clip {
+  end: number;
+  id: any;
+  name: string;
+  start: number;
+}
 
 // tslint:disable-next-line
 interface State {
@@ -35,14 +37,8 @@ interface State {
 interface Props {
   closeClipEdition: () => void;
   currentTime: number;
-  clipToEdit: {
-    end: number;
-    id?: number;
-    name: string;
-    start: number;
-  };
-  // @ts-ignore
-  saveClip: (clip) => void;
+  clip: Clip;
+  saveClip: (clip: Clip) => void;
 }
 
 class AddEditClip extends React.Component<Props, State> {
@@ -50,11 +46,11 @@ class AddEditClip extends React.Component<Props, State> {
   props: Props;
   // tslint:disable-next-line
   state: State = {
-    end: (this.props.clipToEdit && this.props.clipToEdit.end) || this.props.currentTime,
-    endSet: (this.props.clipToEdit && this.props.clipToEdit.end != null) || false,
-    name: this.props.clipToEdit && this.props.clipToEdit.name ? this.props.clipToEdit.name : '',
-    start: this.props.clipToEdit && this.props.clipToEdit.start ? this.props.clipToEdit.start : this.props.currentTime,
-    startSet: (this.props.clipToEdit && this.props.clipToEdit.start != null) || false
+    end: (this.props.clip && this.props.clip.end) || this.props.currentTime,
+    endSet: (this.props.clip && this.props.clip.end != null) || false,
+    name: this.props.clip && this.props.clip.name ? this.props.clip.name : '',
+    start: this.props.clip && this.props.clip.start ? this.props.clip.start : this.props.currentTime,
+    startSet: (this.props.clip && this.props.clip.start != null) || false
   };
 
   // @ts-ignore
@@ -62,10 +58,18 @@ class AddEditClip extends React.Component<Props, State> {
   handleOnChangeName = e => this.setState({ name: e.target.value });
 
   // tslint:disable-next-line
+  editClipStart = () => {
+    console.log('>>>>>> editClipStart >>>>>>');
+    this.setState({
+      endSet: false,
+      startSet: false
+      // endSet: false,
+      // startSet: false
+    });
+  };
+
+  // tslint:disable-next-line
   setClipStart = (currentTime: number) => {
-    console.log('>>>>>> SET >>>>>>');
-    console.log('>>>>>> SET >>>>>>');
-    console.log('>>>>>> SET >>>>>>');
     console.log('>>>>>> setClipStart >>>>>>');
     console.log('currentTime > ', currentTime);
     this.setState({
@@ -75,10 +79,9 @@ class AddEditClip extends React.Component<Props, State> {
   };
 
   // tslint:disable-next-line
-  editClipStart = () => {
+  editClipEnd = () => {
     this.setState({
-      endSet: false,
-      startSet: false
+      endSet: false
     });
   };
 
@@ -97,25 +100,20 @@ class AddEditClip extends React.Component<Props, State> {
   };
 
   // tslint:disable-next-line
-  editClipEnd = () => {
-    this.setState({
-      endSet: false
-    });
-  };
-
-  // tslint:disable-next-line
-  saveClip = (clipToEdit: any) => {
-    console.log('SAVE CLIP > clipToEdit > ', clipToEdit);
+  saveClip = (clip: any) => {
+    console.log('SAVE CLIP > clip > ', clip);
   };
 
   // tslint:disable-next-line
   render() {
-    const { clipToEdit, closeClipEdition, currentTime, saveClip } = this.props;
+    const { clip, closeClipEdition, currentTime, saveClip } = this.props;
     const { name, start, startSet, end, endSet } = this.state;
+    /*
     console.log('>>>>>> AddClipDialog > RENDER >>>>>>');
+    console.log('this.props > CURRENT TIME > ', currentTime);
     console.log('this.props > ', this.props);
     console.log('this.state > ', this.state);
-
+    */
     return (
       <AddEditClipComponent>
         <ul>
@@ -126,51 +124,49 @@ class AddEditClip extends React.Component<Props, State> {
           <li>
             <div>
               Start Time
-              {startSet ? (
+              {!startSet ? (
                 <div>
-                  {start}
-                  <button onClick={() => this.setClipStart(currentTime)}>Set Start</button>
+                  {currentTime}
+                  <button className="set" onClick={() => this.setClipStart(currentTime)}>Set Start</button>
                 </div>
               ) : (
                 <div>
-                  {currentTime}
-                  <button onClick={this.editClipStart}>Edit Start</button>
+                  {start}
+                  <button className="edit" onClick={this.editClipStart}>Edit Start</button>
                 </div>
               )}
             </div>
           </li>
-          <li>
-            {startSet ? (
+          {startSet ? (
+            <li>
               <div>
                 End Time
-                {endSet ? (
+                {!endSet ? (
                   <div>
-                    {end}
-                    <button className="set" onClick={() => this.setClipEnd(currentTime)}>
-                      Set End
-                    </button>
+                    {currentTime}
+                    <button className="set" onClick={() => this.setClipEnd(currentTime)}>Set End</button>
                   </div>
                 ) : (
                   <div>
-                    {currentTime}
-                    <button className="set" onClick={this.editClipEnd}>
+                    {end}
+                    <button className="edit" onClick={this.editClipEnd}>
                       Edit End
                     </button>
                   </div>
                 )}
               </div>
-            ) : null}
-          </li>
+            </li>
+          ) : null}
         </ul>
         {saveClip != null ? (
           // @ts-ignore
           <Mutation
             mutation={SAVE_CLIP}
             variables={{
-              end: CLIP_MOCKED.end,
-              id: clipToEdit.id,
+              end,
+              id: clip && clip.id ? clip.id : null,
               name,
-              start: CLIP_MOCKED.start
+              start
             }}
           >
             {SAVE_CLIP => ( // tslint:disable-line
@@ -182,7 +178,7 @@ class AddEditClip extends React.Component<Props, State> {
                   closeClipEdition();
                 }}
               >
-                Save YES
+                Save
               </button>
             )}
           </Mutation>
