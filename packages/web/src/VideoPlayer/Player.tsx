@@ -29,7 +29,8 @@ interface State {
 }
 
 // @ts-ignore
-class Player extends React.PureComponent<Props, State> {
+class Player extends React.Component<Props, State> {
+  // class Player extends React.PureComponent<Props, State> {
   // @ts-ignore
   // tslint:disable-next-line
   videoPlayer;
@@ -69,6 +70,18 @@ class Player extends React.PureComponent<Props, State> {
     return false;
   }
   */
+  // @ts-ignore
+  // tslint:disable-next-line
+  shouldComponentUpdate(nextProps, nextState) {
+    // console.log('>>> shouldComponentUpdate!!!');
+    // console.log('nextProps.videoUrl !== this.props.videoUrl > ', nextProps.videoUrl !== this.props.videoUrl);
+    if (nextProps.videoUrl !== this.props.videoUrl) {
+      console.log('NEW > nextProps.videoUrl > ', nextProps.videoUrl);
+      this.videoPlayer.load();
+      return true;
+    }
+    return false;
+  }
 
   // tslint:disable-next-line
   handlePlay = () => {
