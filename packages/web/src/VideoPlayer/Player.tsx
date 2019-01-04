@@ -1,14 +1,13 @@
-// import { gql } from 'apollo-boost';
-// import gql from 'graphql-tag';
 import * as React from 'react';
-// import { Mutation, Query } from 'react-apollo';
-// import { Query } from 'react-apollo';
 
-// import AddEditClip from './AddEditClip';
+import AddEditClip from './AddEditClip';
+import Clip from './Clip';
 import Clips from './Clips';
 import Video from './Video';
 
-import { VideoComponent } from './styles';
+import { getFragment } from '../utils';
+
+import { ClipsComponent, VideoComponent } from './styles';
 
 // tslint:disable-next-line
 interface Props {
@@ -21,16 +20,14 @@ interface Props {
 
 // tslint:disable-next-line
 interface State {
-  // isEditingClip: boolean;
-  url: string;
+  isEditingClip: boolean;
   videoFragment: string;
   clipToEdit: any;
   currentTime: number;
 }
 
 // @ts-ignore
-class Player extends React.Component<Props, State> {
-  // class Player extends React.PureComponent<Props, State> {
+class Player extends React.PureComponent<Props, State> {
   // @ts-ignore
   // tslint:disable-next-line
   videoPlayer;
@@ -38,83 +35,43 @@ class Player extends React.Component<Props, State> {
   state: State = {
     clipToEdit: null,
     currentTime: 0,
-    // isEditingClip: false,
-    url: this.props.videoUrl,
-    // url: this.props.baseUrl,
-    // url: this.props.videoUrl,
+    isEditingClip: false,
     videoFragment: ''
   };
-  /*
-  // componentWillMount() {
-  // @ts-ignore
-  // tslint:disable-next-line
-  componentDidMount() {
-    // console.log('>>> componentDidMount!!!');
-    // console.log('>>> this.props >', this.props);
-    this.setState({ url: this.props.videoUrl }, () => {
-      this.videoPlayer.load();
-      return true;
-    });
-  }
-
-  // @ts-ignore
-  // tslint:disable-next-line
-  shouldComponentUpdate(nextProps, nextState) {
-    // console.log('>>> shouldComponentUpdate!!!');
-    // console.log('nextProps.videoUrl !== this.props.videoUrl > ', nextProps.videoUrl !== this.props.videoUrl);
-    if (nextProps.videoUrl !== this.props.videoUrl) {
-      console.log('NEW > nextProps.videoUrl > ', nextProps.videoUrl);
-      this.videoPlayer.load();
-      return true;
-    }
-    return false;
-  }
-  */
-  // @ts-ignore
-  // tslint:disable-next-line
-  shouldComponentUpdate(nextProps, nextState) {
-    // console.log('>>> shouldComponentUpdate!!!');
-    // console.log('nextProps.videoUrl !== this.props.videoUrl > ', nextProps.videoUrl !== this.props.videoUrl);
-    if (nextProps.videoUrl !== this.props.videoUrl) {
-      console.log('NEW > nextProps.videoUrl > ', nextProps.videoUrl);
-      this.videoPlayer.load();
-      return true;
-    }
-    return false;
-  }
 
   // tslint:disable-next-line
   handlePlay = () => {
     console.log('handleClick >> ');
     this.videoPlayer.play();
   };
-  /*
+
   // @ts-ignore
   // tslint:disable-next-line
-  handleOnPlay = (el) => {
-    console.log('handleOnPlay >> ');
-    console.log('handleOnPlay >> el >> ', el);
-    console.log('handleOnPlay >> currentTime  >> ', this.videoPlayer.currentTime);
-    console.log('handleOnPlay >> currentTime Floor  >> ', Math.floor(this.videoPlayer.currentTime));
-    console.log('handleOnPlay >> buffered  >> ', this.videoPlayer.buffered);
-    // console.log('currentTime  >> floor', Math.floor(this.videoPlayer.currentTime));
-    this.setState({
-      currentTime: Math.floor(this.videoPlayer.currentTime)
-    });
-
-    // TODO: this would be useful to listen video currentTime or unListen it
-    // this.setState({
-    //   isEditingClip: false
-    // });
+  editClip = clip => {
+    console.log('>>> editClip > clip > ', clip);
+    console.log('>>> editClip > clip.name > ', clip.name);
+    this.setState(
+      {
+        clipToEdit: clip
+      },
+      () => {
+        this.setState({
+          isEditingClip: true
+        });
+      }
+    );
   };
-  */
+
+  // tslint:disable-next-line
+  closeClipEdition = () => {
+    this.setState({
+      isEditingClip: false
+    });
+  };
 
   // @ts-ignore
   // tslint:disable-next-line
   handleTimeUpdate = () => {
-    // console.log('handleTimeUpdate >> ');
-    // console.log('handleTimeUpdate >> currentTime  >> ', this.videoPlayer.currentTime);
-    // console.log('currentTime  >> floor', Math.floor(this.videoPlayer.currentTime));
     this.setState({
       currentTime: Math.floor(this.videoPlayer.currentTime)
     });
@@ -126,30 +83,46 @@ class Player extends React.Component<Props, State> {
     */
   };
 
+  // @ts-ignore
   // tslint:disable-next-line
-  ref = (videoPlayer: HTMLVideoElement) => {
+  goToFragment = (start?, end?) => {
+    this.props.history.push(getFragment(start, end));
+    this.videoPlayer.load();
+  };
+
+  // @ts-ignore
+  // tslint:disable-next-line
+  setVideoRef = videoPlayer => {
     this.videoPlayer = videoPlayer;
   };
 
   // tslint:disable-next-line
   render() {
-    const { currentTime } = this.state;
+    const { clipToEdit, currentTime, isEditingClip } = this.state;
     const { videoUrl } = this.props;
     return (
       <VideoComponent>
         <h2>Video Component with Fragments</h2>
-        <p className="url">{videoUrl}</p>
-        <nav>
-          <button onClick={this.handlePlay}>PLAY</button>
-        </nav>
-        <Video
-          getVideoEl={this.ref.bind(this)}
-          // handleOnPlay={this.handleOnPlay}
-          handleTimeUpdate={this.handleTimeUpdate}
-        >
-          <source src={videoUrl} type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"' />
-        </Video>
-        <Clips currentTime={currentTime} />
+        <p className="description">Edit a clip and Change its start and end time.</p>
+        <Video setRef={this.setVideoRef} handleTimeUpdate={this.handleTimeUpdate} videoUrl={videoUrl} />
+        <ClipsComponent>
+          <Clip
+            clip={{
+              name: 'Full Video'
+            }}
+            goToFragment={() => this.goToFragment(0)}
+          />
+          <Clips currentTime={currentTime} editClip={this.editClip} goToFragment={this.goToFragment} />
+          <button onClick={this.editClip}>(+) New Clip</button>
+          {isEditingClip ? (
+            <AddEditClip
+              // @ts-ignore
+              clip={clipToEdit}
+              closeClipEdition={this.closeClipEdition}
+              currentTime={currentTime}
+            />
+          ) : null}
+        </ClipsComponent>
       </VideoComponent>
     );
   }

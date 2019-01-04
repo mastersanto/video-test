@@ -27,3 +27,4 @@ const VideoPlayer = props => {
 
 // @ts-ignore
 export default withRouter(VideoPlayer);
+// export default VideoPlayer;

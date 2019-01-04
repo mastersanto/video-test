@@ -5,6 +5,10 @@ export const VideoComponent = styled.section`
   padding: 5px;
   position: relative;
 
+  .description {
+    color: white;
+  }
+
   video {
     max-width: 100%;
     min-width: 100%;
@@ -191,7 +195,7 @@ export const AddEditClipComponent = styled.div`
     }
 
     &.edit {
-      background-color: blue;
+      background-color: red;
       color: white;
     }
 

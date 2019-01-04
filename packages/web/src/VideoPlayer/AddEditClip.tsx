@@ -38,7 +38,6 @@ interface Props {
   closeClipEdition: () => void;
   currentTime: number;
   clip: Clip;
-  saveClip: (clip: Clip) => void;
 }
 
 class AddEditClip extends React.Component<Props, State> {
@@ -63,8 +62,6 @@ class AddEditClip extends React.Component<Props, State> {
     this.setState({
       endSet: false,
       startSet: false
-      // endSet: false,
-      // startSet: false
     });
   };
 
@@ -106,14 +103,8 @@ class AddEditClip extends React.Component<Props, State> {
 
   // tslint:disable-next-line
   render() {
-    const { clip, closeClipEdition, currentTime, saveClip } = this.props;
+    const { clip, closeClipEdition, currentTime } = this.props;
     const { name, start, startSet, end, endSet } = this.state;
-    /*
-    console.log('>>>>>> AddClipDialog > RENDER >>>>>>');
-    console.log('this.props > CURRENT TIME > ', currentTime);
-    console.log('this.props > ', this.props);
-    console.log('this.state > ', this.state);
-    */
     return (
       <AddEditClipComponent>
         <ul>
@@ -127,12 +118,12 @@ class AddEditClip extends React.Component<Props, State> {
               {!startSet ? (
                 <div>
                   {currentTime}
-                  <button className="set" onClick={() => this.setClipStart(currentTime)}>Set Start</button>
+                  <button className="set" onClick={() => this.setClipStart(currentTime)}>Set</button>
                 </div>
               ) : (
                 <div>
                   {start}
-                  <button className="edit" onClick={this.editClipStart}>Edit Start</button>
+                  <button className="edit" onClick={this.editClipStart}>Change</button>
                 </div>
               )}
             </div>
@@ -144,13 +135,13 @@ class AddEditClip extends React.Component<Props, State> {
                 {!endSet ? (
                   <div>
                     {currentTime}
-                    <button className="set" onClick={() => this.setClipEnd(currentTime)}>Set End</button>
+                    <button className="set" onClick={() => this.setClipEnd(currentTime)}>Set</button>
                   </div>
                 ) : (
                   <div>
                     {end}
                     <button className="edit" onClick={this.editClipEnd}>
-                      Edit End
+                      Change
                     </button>
                   </div>
                 )}
@@ -158,31 +149,28 @@ class AddEditClip extends React.Component<Props, State> {
             </li>
           ) : null}
         </ul>
-        {saveClip != null ? (
-          // @ts-ignore
-          <Mutation
-            mutation={SAVE_CLIP}
-            variables={{
-              end,
-              id: clip && clip.id ? clip.id : null,
-              name,
-              start
-            }}
-          >
-            {SAVE_CLIP => ( // tslint:disable-line
-              <button
-                className="delete"
-                // @ts-ignore
-                onClick={() => {
-                  SAVE_CLIP();
-                  closeClipEdition();
-                }}
-              >
-                Save
-              </button>
-            )}
-          </Mutation>
-        ) : null}
+        <Mutation
+          mutation={SAVE_CLIP}
+          variables={{
+            end,
+            id: clip && clip.id ? clip.id : null,
+            name,
+            start
+          }}
+        >
+          {SAVE_CLIP => ( // tslint:disable-line
+            <button
+              className="delete"
+              // @ts-ignore
+              onClick={() => {
+                SAVE_CLIP();
+                closeClipEdition();
+              }}
+            >
+              Save
+            </button>
+          )}
+        </Mutation>
         <button className="cancel" onClick={closeClipEdition}>
           Cancel
         </button>
