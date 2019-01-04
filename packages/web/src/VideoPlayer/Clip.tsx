@@ -1,5 +1,4 @@
 import gql from 'graphql-tag';
-// import { gql } from 'apollo-boost';
 import * as React from 'react';
 import { Mutation } from 'react-apollo';
 
@@ -54,15 +53,12 @@ const Clip = (props: Props) => {
             variables={{ id: props.clip.id }}
             update={(cache, { data }) => {
               // @ts-ignore
-              const { clips } = cache.readQuery({ query: GET_CLIPS });
-              console.log('Mutation DELETE_CLIP >> data > ', data);
-              console.log('Mutation DELETE_CLIP >> clips > ', clips);
-              // @ts-ignore
               const clipToDelete = () => {
                 // @ts-ignore
+                const { clips } = cache.readQuery({ query: GET_CLIPS });
+                // @ts-ignore
                 const toDelete = clips.filter(clipItem => clipItem.id === data.id);
-                console.log('>>>>> clipToDelete >> toDelete > ', toDelete);
-                clips.splice(clips.indexOf(toDelete), 1);
+                clips.splice(clips.indexOf(toDelete) - 1, 1);
               };
               cache.writeQuery({
                 query: GET_CLIPS,

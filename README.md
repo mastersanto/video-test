@@ -15,14 +15,19 @@ You'll get:
 * Hot reloading enabled for [localhost](http://localhost:3000) environment
 * Test graphql with [GraphiQL](http://localhost:8080/graphiql)
 
-### Resources
+### NOTES
+
+* `VIDEO_URL` is being set in `packages/web/src/Routes.tsx`
+
+#### Resources
 
 * [Create Apollo App](https://github.com/sysgears/create-apollo-app)
 * [Yarn Workspaces](https://yarnpkg.com/blog/2017/08/02/introducing-workspaces/)
 * [Styled Components](https://www.styled-components.com/)
 
-### TODO
+#### TODO
 
+* Clean up code
 * Ignore `schema.graphql`
 * Serve video and add `.env` config file with video url
 * Add Docz

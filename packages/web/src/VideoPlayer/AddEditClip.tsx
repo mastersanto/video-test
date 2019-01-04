@@ -1,5 +1,4 @@
 import gql from 'graphql-tag';
-// import { gql } from 'apollo-boost';
 import * as React from 'react';
 import { Mutation } from 'react-apollo';
 
@@ -164,7 +163,6 @@ class AddEditClip extends React.Component<Props, State> {
           update={(cache, { data }) => {
             // @ts-ignore
             const { clips } = cache.readQuery({ query: GET_CLIPS });
-            console.log('Mutation SAVE_CLIP >> clips > ', clips);
             // @ts-ignore
             const setClips = () => {
               if (id == null) {

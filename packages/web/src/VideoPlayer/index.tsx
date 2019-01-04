@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { withRouter } from 'react-router-dom';
-// import { RouteComponentProps } from 'react-router-dom';
 
 import Player from './Player';
 
@@ -27,4 +26,3 @@ const VideoPlayer = props => {
 
 // @ts-ignore
 export default withRouter(VideoPlayer);
-// export default VideoPlayer;
