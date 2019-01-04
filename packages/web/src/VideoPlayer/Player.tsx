@@ -104,6 +104,7 @@ class Player extends React.PureComponent<Props, State> {
       <VideoComponent>
         <h2>Video Component with Fragments</h2>
         <p className="description">Edit a clip and Change its start and end time.</p>
+        <p className="description">Caveats: needs to refresh to update local store (TODO).</p>
         <Video setRef={this.setVideoRef} handleTimeUpdate={this.handleTimeUpdate} videoUrl={videoUrl} />
         <ClipsComponent>
           <Clip
