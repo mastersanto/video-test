@@ -1,6 +1,8 @@
 # Jobsity Video Test
 
-Video Player based on a yarn monorepo with server and web packages.
+Video Clip(Fragment) Player based on React Router:
+
+* Dynamic video fragment query based on url params: `/:start/:end`
 
 ## Development
 
@@ -18,6 +20,7 @@ You'll get:
 ### NOTES
 
 * `VIDEO_URL` is being set in `packages/web/src/Routes.tsx`
+* Check with viewport < 768
 
 #### Resources
 
@@ -32,4 +35,5 @@ You'll get:
 * Serve video and add `.env` config file with video url
 * Add Docz
 * Add tests
+* Responsive design
 * Add workspace for Mobile package with React Native

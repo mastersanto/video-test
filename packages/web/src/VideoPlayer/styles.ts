@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
 export const VideoComponent = styled.section`
-  background-color: blue;
+  background-color: black;
   padding: 5px;
   position: relative;
 
-  .description {
+  > h2 {
     color: white;
   }
 
@@ -13,27 +13,36 @@ export const VideoComponent = styled.section`
     max-width: 100%;
     min-width: 100%;
   }
-
-  .url {
-    font-size: 12px;
-  }
 `;
 
-export const ClipsComponent = styled.nav`
+export const NavigationComponent = styled.nav`
   position: relative;
   display: flex;
+  // max-width: 100%;
+  // overflow-x: auto;
+  flex-wrap: wrap;
 
-  .ClipsList {
+  > article {
     display: flex;
+    max-width: 200px;
+    align-items: flex-start;
   }
 
   > button {
     cursor: pointer;
+    min-width: 100px;
   }
 `;
 
-export const ClipComponent = styled.div`
+export const ClipsComponent = styled.div`
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+`;
+
+export const ClipComponent = styled.article`
   position: relative;
+  align-items: flex-start;
 
   &:hover > .data {
     opacity: 1;
@@ -172,7 +181,7 @@ export const AddClipComponent = styled.div`
 `;
 
 export const AddEditClipComponent = styled.div`
-  background-color: cyan;
+  background-color: rgb(255, 255, 224);
   padding: 8px;
   position: absolute;
   right: 0;

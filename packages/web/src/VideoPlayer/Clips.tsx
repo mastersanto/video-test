@@ -4,6 +4,9 @@ import { Query } from 'react-apollo';
 
 import Clip from './Clip';
 
+// TODO: create NavComponent and change this to ClipsComponent
+import { ClipsComponent } from './styles';
+
 export const GET_CLIPS = gql`
   query Clips {
     clips {
@@ -66,8 +69,9 @@ class Clips extends React.Component<Props, State> {
           if (loading) {
             return <p>Loading...</p>;
           }
+          // <div className="ClipsList">
           return (
-            <section className="ClipsList">
+            <ClipsComponent>
               {data.clips.map((clip: any) => (
                 <Clip
                   key={clip.id}
@@ -78,7 +82,7 @@ class Clips extends React.Component<Props, State> {
                   goToFragment={goToFragment}
                 />
               ))}
-            </section>
+            </ClipsComponent>
           );
         }}
       </Query>

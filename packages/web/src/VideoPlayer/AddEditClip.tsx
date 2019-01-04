@@ -121,6 +121,7 @@ class AddEditClip extends React.Component<Props, State> {
                 <div>
                   {currentTime}
                   <button className="set" onClick={() => this.setClipStart(currentTime)}>Set</button>
+                  (move through timeline)
                 </div>
               ) : (
                 <div>
@@ -138,6 +139,7 @@ class AddEditClip extends React.Component<Props, State> {
                   <div>
                     {currentTime}
                     <button className="set" onClick={() => this.setClipEnd(currentTime)}>Set</button>
+                    (move through timeline)
                   </div>
                 ) : (
                   <div>

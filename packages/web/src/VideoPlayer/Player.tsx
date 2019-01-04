@@ -7,7 +7,7 @@ import Video from './Video';
 
 import { getFragment } from '../utils';
 
-import { ClipsComponent, VideoComponent } from './styles';
+import { NavigationComponent, VideoComponent } from './styles';
 
 // tslint:disable-next-line
 interface Props {
@@ -102,17 +102,16 @@ class Player extends React.PureComponent<Props, State> {
     const { videoUrl } = this.props;
     return (
       <VideoComponent>
-        <h2>Video Component with Fragments</h2>
-        <p className="description">Edit a clip and Change its start and end time.</p>
-        <p className="description">Caveats: needs to refresh to update local store (TODO).</p>
-        <Video setRef={this.setVideoRef} handleTimeUpdate={this.handleTimeUpdate} videoUrl={videoUrl} />
-        <ClipsComponent>
+        <header>
           <Clip
             clip={{
               name: 'Full Video'
             }}
             goToFragment={() => this.goToFragment(0)}
           />
+        </header>
+        <Video setRef={this.setVideoRef} handleTimeUpdate={this.handleTimeUpdate} videoUrl={videoUrl} />
+        <NavigationComponent>
           <Clips currentTime={currentTime} editClip={this.editClip} goToFragment={this.goToFragment} />
           <button onClick={this.editClip}>(+) New Clip</button>
           {isEditingClip ? (
@@ -123,7 +122,7 @@ class Player extends React.PureComponent<Props, State> {
               currentTime={currentTime}
             />
           ) : null}
-        </ClipsComponent>
+        </NavigationComponent>
       </VideoComponent>
     );
   }

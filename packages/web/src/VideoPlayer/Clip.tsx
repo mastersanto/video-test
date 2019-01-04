@@ -58,7 +58,7 @@ const Clip = (props: Props) => {
                 const { clips } = cache.readQuery({ query: GET_CLIPS });
                 // @ts-ignore
                 const toDelete = clips.filter(clipItem => clipItem.id === data.id);
-                clips.splice(clips.indexOf(toDelete) - 1, 1);
+                clips.splice(clips.indexOf(toDelete), 1);
               };
               cache.writeQuery({
                 query: GET_CLIPS,
