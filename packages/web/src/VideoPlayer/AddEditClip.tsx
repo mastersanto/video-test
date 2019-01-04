@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import * as React from 'react';
 import { Mutation } from 'react-apollo';
 
+import { GET_CLIPS } from './Clips';
 import { AddEditClipComponent } from './styles';
 
 const SAVE_CLIP = gql`
@@ -19,13 +20,14 @@ const SAVE_CLIP = gql`
 // tslint:disable-next-line
 interface Clip {
   end: number;
-  id: any;
+  id?: any;
   name: string;
   start: number;
 }
 
 // tslint:disable-next-line
 interface State {
+  id: any;
   name: string;
   start: number;
   startSet: boolean;
@@ -47,6 +49,7 @@ class AddEditClip extends React.Component<Props, State> {
   state: State = {
     end: (this.props.clip && this.props.clip.end) || this.props.currentTime,
     endSet: (this.props.clip && this.props.clip.end != null) || false,
+    id: (this.props.clip && this.props.clip.id) || null,
     name: this.props.clip && this.props.clip.name ? this.props.clip.name : '',
     start: this.props.clip && this.props.clip.start ? this.props.clip.start : this.props.currentTime,
     startSet: (this.props.clip && this.props.clip.start != null) || false
@@ -103,8 +106,9 @@ class AddEditClip extends React.Component<Props, State> {
 
   // tslint:disable-next-line
   render() {
-    const { clip, closeClipEdition, currentTime } = this.props;
-    const { name, start, startSet, end, endSet } = this.state;
+    const { closeClipEdition, currentTime } = this.props;
+    // const { clip, closeClipEdition, currentTime } = this.props;
+    const { id, name, start, startSet, end, endSet } = this.state;
     return (
       <AddEditClipComponent>
         <ul>
@@ -153,9 +157,29 @@ class AddEditClip extends React.Component<Props, State> {
           mutation={SAVE_CLIP}
           variables={{
             end,
-            id: clip && clip.id ? clip.id : null,
+            id,
             name,
             start
+          }}
+          // tslint:disable-next-line
+          update={(cache, { data }) => {
+            // @ts-ignore
+            const { clips } = cache.readQuery({ query: GET_CLIPS });
+            console.log('Mutation SAVE_CLIP >> clips > ', clips);
+            // @ts-ignore
+            const setClips = () => {
+              if (id == null) {
+                return clips.concat([data.saveClip]);
+              }
+              return;
+            };
+            cache.writeQuery({
+              query: GET_CLIPS,
+              // tslint:disable-next-line
+              data: {
+                clips: setClips()
+              }
+            });
           }}
         >
           {SAVE_CLIP => ( // tslint:disable-line

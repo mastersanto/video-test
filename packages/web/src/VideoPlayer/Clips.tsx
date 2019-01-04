@@ -4,7 +4,7 @@ import { Query } from 'react-apollo';
 
 import Clip from './Clip';
 
-const GET_CLIPS = gql`
+export const GET_CLIPS = gql`
   query Clips {
     clips {
       id

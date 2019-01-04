@@ -1,13 +1,13 @@
 // TODO: add Subscriptions
-import { PubSub } from 'apollo-server';
+// import { PubSub } from 'apollo-server';
 import defaults from './defaults';
 
 const { clips, videos } = defaults;
 
-const SAVE_CLIP = 'SAVE_CLIP';
+// const SAVE_CLIP = 'SAVE_CLIP';
 // const DELETE_CLIP = 'DELETE_CLIP';
 
-const pubsub = new PubSub();
+// const pubsub = new PubSub();
 
 // TODO: move to utils
 const getId = (): string => {
@@ -48,12 +48,13 @@ export default {
   Mutation: {
     // @ts-ignore
     // tslint:disable-next-line
-    async saveClip(_, { id, name, start, end }, { cache }) {
-      console.log('>>> deleteClip > cache > ', cache);
+    saveClip: (_, { id, name, start, end }, { cache }) => {
+      console.log('>>> saveClip > cache > ', cache);
       let clipToSave;
 
       if (id != null) {
-        clipToSave = await clips.find(clipItem => clipItem.id === id);
+        clipToSave = clips.find(clipItem => clipItem.id === id);
+        // clipToSave = await clips.find(clipItem => clipItem.id === id);
         if (clipToSave) {
           console.log('>>> save With id > clipToSave > ', id);
           console.log('>>> save With > ', clipToSave);
@@ -64,6 +65,7 @@ export default {
       } else {
         console.log('>>> clipToSave NO id > clips.length > ', clips.length);
         clipToSave = {
+          // __typename: 'Clip',
           end,
           id: getId(),
           name,
@@ -72,7 +74,7 @@ export default {
         console.log('>>> clipToSave NO id > > ', clipToSave);
         clips.push(clipToSave);
       }
-      pubsub.publish(SAVE_CLIP, { clip: clipToSave });
+      // pubsub.publish(SAVE_CLIP, { clip: clipToSave });
 
       return clipToSave;
     },

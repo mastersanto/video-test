@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Mutation } from 'react-apollo';
 
 import ClipData from './ClipData';
+import { GET_CLIPS } from './Clips';
 import { ClipComponent } from './styles';
 
 const DELETE_CLIP = gql`
@@ -48,7 +49,47 @@ const Clip = (props: Props) => {
           </button>
         ) : null}
         {props.clip.id ? (
-          <Mutation mutation={DELETE_CLIP} variables={{ id: props.clip.id }}>
+          <Mutation
+            mutation={DELETE_CLIP}
+            variables={{ id: props.clip.id }}
+            update={(cache, { data }) => {
+              // @ts-ignore
+              const { clips } = cache.readQuery({ query: GET_CLIPS });
+              console.log('Mutation DELETE_CLIP >> data > ', data);
+              console.log('Mutation DELETE_CLIP >> clips > ', clips);
+              // @ts-ignore
+              // const clipToDelete = clips.find(clipItem => clipItem.id === data.id);
+              // const index = clips.indexOf(clipToDelete);
+              cache.writeQuery({
+                query: GET_CLIPS,
+                // tslint:disable-next-line
+                data: {
+                  clips: () => {
+                    // @ts-ignore
+                    const clipToDelete = clips.find(clipItem => clipItem.id === data.id);
+                    // const index = clips.indexOf(clipToDelete);
+                    return clips.splice(clipToDelete, 1);
+                    // return clips.splice(index, 1);
+                  }
+                }
+                // data: { clips: data.splice(index, 1) }
+              });
+              /*
+              cache.writeQuery({
+                query: GET_CLIPS,
+                // tslint:disable-next-line
+                data: {
+                  clips: () => {
+                    // @ts-ignore
+                    const clipToDelete = async clips.find(clipItem => clipItem.id === data.id);
+                    const index = clips.indexOf(clipToDelete);
+                    clips.splice(index, 1);
+                  }
+                }
+              });
+              */
+            }}
+          >
             {DELETE_CLIP => ( // tslint:disable-line
               <button
                 className="delete"
