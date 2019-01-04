@@ -107,7 +107,6 @@ class AddEditClip extends React.Component<Props, State> {
   // tslint:disable-next-line
   render() {
     const { closeClipEdition, currentTime } = this.props;
-    // const { clip, closeClipEdition, currentTime } = this.props;
     const { id, name, start, startSet, end, endSet } = this.state;
     return (
       <AddEditClipComponent>
